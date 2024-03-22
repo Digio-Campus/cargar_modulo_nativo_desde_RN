@@ -5,24 +5,25 @@
  * @format
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   useColorScheme,
   View,
+  NativeModules,
 } from 'react-native';
 
 import {
   Colors,
-  DebugInstructions,
   Header,
   LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
 type SectionProps = PropsWithChildren<{
@@ -61,6 +62,9 @@ function App(): React.JSX.Element {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  const [firstNumber, setFirstNumber] = useState(0);
+  const [secondNumber, setSecondNumber] = useState(0);
+  const [result, setResult] = useState(0);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -76,20 +80,34 @@ function App(): React.JSX.Element {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+          <Section title="Native Kotlin Module" />
+          <TextInput
+            onChangeText={text => {
+              setFirstNumber(parseInt(text, 10));
+            }}
+            placeholder="Enter first number"
+            keyboardType="numeric"
+          />
+          <TextInput
+            onChangeText={text => {
+              setSecondNumber(parseInt(text, 10));
+            }}
+            placeholder="Enter second number"
+            keyboardType="numeric"
+          />
+          <Button
+            title="Calculate"
+            onPress={() => {
+              NativeModules.MyModule.calculate(firstNumber, secondNumber)
+                .then((calculatedResult: number) => {
+                  setResult(calculatedResult);
+                })
+                .catch((error: any) => {
+                  console.error(error);
+                });
+            }}
+          />
+          <Text>Result: {result}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
